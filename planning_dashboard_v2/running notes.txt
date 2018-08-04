@@ -1,7 +1,7 @@
 Really what's next, 
 
 It would appear that the scenario function is working, now I just need to get it to create new maps. Then that's just about it I think. 
-Now to see if this GitHub thing works. 
+Now to see if this GitHub thing works. Does it know that this file changed. 
 
 
 Problem is that I didn't update the one in the RData where I'm building the app, rather I didn't update it to the baseline column title. The numbers are correct. 
