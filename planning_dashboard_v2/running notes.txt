@@ -1,0 +1,40 @@
+Really what's next, 
+
+It would appear that the scenario function is working, now I just need to get it to create new maps. Then that's just about it I think. 
+Now to see if this GitHub thing works. 
+
+
+Problem is that I didn't update the one in the RData where I'm building the app, rather I didn't update it to the baseline column title. The numbers are correct. 
+
+Need to fix the map, the legend is quite big. 
+
+
+Add amenity info
+
+bg_scores? just baseline scores. the baseline is actually the first scenario. Need to fix that real quick. Can probably do later. 
+merged_data? for scenarios
+merged_data_parcels? for scenarios
+
+biking? just to get the spatial_id's required? 
+
+
+functions - should probably actually upload these files. It'll be good to have them on GitHub for public scrutiny. 
+
+score_calc
+rank_fixer
+type_splitter
+weight_adder
+
+
+What do I need for the map?
+
+really just need data.shape sspz boundary?
+
+
+
+"C:/Users/Derek/Documents/CS_work/planning_dashboard_v2"
+
+
+
+
+
