@@ -28,6 +28,7 @@ load("dashboard_data.RData")
 load("dashboard_map_data.RData")
 
 # This has base_map, data.shape, and sspz_boundary
+# save(base_map, data.shape, sspz_boundary, file = "dashboard_map_data.RData")
 
 # Libraries and code used for building
 # library(tictoc)

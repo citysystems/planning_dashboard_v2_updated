@@ -5,8 +5,8 @@ account: maxok
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 395177
-bundleId: 1519956
+bundleId: 1521141
 url: https://maxok.shinyapps.io/planning_dashboard_v2/
-when: 1533530220.50123
+when: 1533578496.30985
 asMultiple: FALSE
 asStatic: FALSE
