@@ -1,8 +1,8 @@
 make_map <- function() {
   
   
-  # Used for testing 
-  # load("dashboard_map_data.RData")
+  # Used for testing, this does allow data.shape to start with a clean slate each time. 
+  load("dashboard_map_data.RData")
   
   new_scores <- scenario()
   
