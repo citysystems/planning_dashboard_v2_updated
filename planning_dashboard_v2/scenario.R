@@ -1,4 +1,9 @@
 scenario <- function() {
+  
+  # When I clear everything, it can't seem to find merged_data_parcels. This is a hacker fix. 
+  # Seems to work just fine on shinyapps so I really don't know what's going on. 
+  load("dashboard_data.RData")
+  
   # I don't think anything needs to be sent in, it just needs to return the new scores somehow. 
   # tic()
   
@@ -74,11 +79,17 @@ scenario <- function() {
   
   temp_merged$scores <- score_calc(temp_merged$time_biking, temp_merged$time_driving, temp_merged$time_transit, temp_merged$time_walking, temp_merged$abs_good, temp_merged$rank, temp_merged$type)
   
- 
-  bg_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('access_score2' = sum(scores, na.rm = TRUE)) %>% left_join(bg_scores)
   
-  bg_scores$diff <- bg_scores$access_score2- bg_scores$access_score
-  bg_scores$diff_prcnt <- bg_scores$access_score2/bg_scores$access_score
+  # Below here has to change. 
+ 
+  new_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('new_score' = sum(scores, na.rm = TRUE))
+  
+  return(new_scores)
+  
+  # bg_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('access_score2' = sum(scores, na.rm = TRUE)) %>% left_join(bg_scores)
+  # 
+  # bg_scores$diff <- bg_scores$access_score2- bg_scores$access_score
+  # bg_scores$diff_prcnt <- bg_scores$access_score2/bg_scores$access_score
  
   
   # toc()
