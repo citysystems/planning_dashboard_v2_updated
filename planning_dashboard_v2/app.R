@@ -84,7 +84,8 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                                     textOutput("new_sspz_avg"))
                                                            )
                                                   ),
-                                                  tabPanel("Data Table", dataTableOutput("data_table")))
+                                                  tabPanel("Data Table", dataTableOutput("data_table")),
+                                                  tabPanel("Analysis by Type","type maps will go here"))
                                     ) # End main panel
                                   )
                                   

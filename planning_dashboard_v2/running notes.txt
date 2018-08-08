@@ -6,6 +6,13 @@ Something is still messed up with the original data.shape I think.
 
 Start adding some features Derek mentioned?
 
+Add ability to visualize by amenity type
+	To do this, all I really need to just filter temp_merged by amenity type. 
+	The question is where to visualize this? 
+		Could just make separate tab for now and add in later where appropriate
+
+Add histograms
+
 
 
 

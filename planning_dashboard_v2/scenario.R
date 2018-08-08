@@ -1,8 +1,10 @@
-scenario <- function() {
+scenario <- function(type = NA) {
   
   # When I clear everything, it can't seem to find merged_data_parcels. This is a hacker fix. 
   # Seems to work just fine on shinyapps so I really don't know what's going on. 
+  # May keep this here because I'll need merged_data to be refreshed each time after incorporating the select type feature. 
   load("dashboard_data.RData")
+  
   
   # I don't think anything needs to be sent in, it just needs to return the new scores somehow. 
   # tic()
