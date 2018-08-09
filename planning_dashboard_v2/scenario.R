@@ -1,4 +1,4 @@
-scenario <- function(type = NA) {
+scenario <- function(type = "All") {
   
   # When I clear everything, it can't seem to find merged_data_parcels. This is a hacker fix. 
   # Seems to work just fine on shinyapps so I really don't know what's going on. 
@@ -78,6 +78,23 @@ scenario <- function(type = NA) {
   
   # Removing the NA ranks. 
   temp_merged <- temp_merged[complete.cases(temp_merged$rank),]
+  
+  
+  # print(type)
+  # print(nrow(temp_merged))
+  
+  # temp_merged needs to get filter here
+  if (type != "All"){
+    print("if statement entered")
+    # temp_merged <- filter(temp_merged, type == type)
+    temp_merged <- temp_merged[temp_merged$type == type,]
+    print(nrow(temp_merged))
+  }
+  
+  # used for making sure that the filtering is actually happening
+  
+  # print(nrow(temp_merged))
+  
   
   temp_merged$scores <- score_calc(temp_merged$time_biking, temp_merged$time_driving, temp_merged$time_transit, temp_merged$time_walking, temp_merged$abs_good, temp_merged$rank, temp_merged$type)
   

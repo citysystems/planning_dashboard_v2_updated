@@ -21,11 +21,11 @@ source("weight_adder.R")
 source("scenario.R")
 source("marg_good_func.R")
 source("make_map.R")
+source("make_map_base.R")
 
 load("dashboard_data.RData")
-
-
 load("dashboard_map_data.RData")
+load(".RData")
 
 # This has base_map, data.shape, and sspz_boundary
 # save(base_map, data.shape, sspz_boundary, file = "dashboard_map_data.RData")
@@ -41,7 +41,11 @@ load("dashboard_map_data.RData")
 # Stuff used for building 
 # setwd("C:\\Users\\Max\\Dropbox\\City_Systems\\Scores_Tools\\planning_dashboard\\planning_dashboard_v2\\planning_dashboard_v2")
 
-# Define UI for application that draws a histogram
+# Creating required variables for use later on 
+list_options <- c("All",unique(merged_data$type))
+
+
+# Define UI 
 ui <- shinyUI(navbarPage("Planning Dashboard",
                          tabPanel("Amenity Locations",
                                   htmlOutput("frame1")),
@@ -85,7 +89,9 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                            )
                                                   ),
                                                   tabPanel("Data Table", dataTableOutput("data_table")),
-                                                  tabPanel("Analysis by Type","type maps will go here"))
+                                                  tabPanel("Analysis by Type",
+                                                           selectInput("type_filter","Amenity Types", list_options),
+                                                           leafletOutput("map_type")))
                                     ) # End main panel
                                   )
                                   
@@ -104,13 +110,18 @@ server <- function(input, output) {
   
   
   
-  # Code for maps
+  # Maps
   output$benchmap <- renderLeaflet({base_map})
   
   returned_objects <- eventReactive(input$recalc,{make_map()})
   
   output$new_map <- renderLeaflet({returned_objects()[[1]]})
   output$data_table <- renderDataTable({returned_objects()[[2]]})
+  
+  # Filtered Map
+  observeEvent(input$type_filter, {
+    output$map_type <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
+  })
   
   # Summary stats
   output$sum_score <- renderText({paste("Benchmark total score:" , round(sum(bg_scores$baseline_score)))})
