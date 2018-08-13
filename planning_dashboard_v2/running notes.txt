@@ -5,11 +5,7 @@ Change legend label
 Start adding some features Derek mentioned?
 
 Add ability to visualize by amenity type
-	To do this, all I really need to just filter temp_merged by amenity type. 
-	The question is where to visualize this? 
-		Really just need to make an eventReactive and send in the proper argument eh?
-		Right now it'll just visualize based on the baseline, as is scores, could later change access_score to another variable to make it visualize
-			based on new scenario. 
+	Pretty sure it works. For some reason the filter function wasn't working. 
 
 	Wouldn't be a bad idea to add a function that makes a new base_map, b/c what I really need is an easy way to make maps with scores
 		and not relative values. I think just quickly adding another function would be the easiest thing to do. Not really a big memory 
