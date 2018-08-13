@@ -11,12 +11,24 @@ Add ability to visualize by amenity type
 		and not relative values. I think just quickly adding another function would be the easiest thing to do. Not really a big memory 
 		footprint and it will prove helpful for updating the base_map if it needs to change. 
 
+
 Add histograms
+	Scores by geography I think. 
+	
+
+What to do with the benchmark score?
+	Change map to SD's or whatever above, below the benchmark. Could also add benchmark by type to the filter. 
 
 
 
 current testing variables 
 test_type
+
+Saved data 
+
+"dashboard_data.RData" = "bg_scores"           "biking"              "merged_data"         "merged_data_parcels";
+
+"dashboard_map_data.RData" = "base_map"      "data.shape"    "sspz_boundary"
 
 
 
