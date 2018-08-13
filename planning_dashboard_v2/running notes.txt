@@ -26,7 +26,7 @@ test_type
 
 Saved data 
 
-"dashboard_data.RData" = "bg_scores"           "biking"              "merged_data"         "merged_data_parcels";
+"dashboard_data.RData" = "bg_scores"           "biking"              "merged_data"         "merged_data_parcels"  "ideal_data";
 
 "dashboard_map_data.RData" = "base_map"      "data.shape"    "sspz_boundary"
 
