@@ -4,6 +4,7 @@ scenario <- function(type = "All", use_new = TRUE) {
   # Seems to work just fine on shinyapps so I really don't know what's going on. 
   # May keep this here because I'll need merged_data to be refreshed each time after incorporating the select type feature. 
   load("dashboard_data.RData")
+  load("data_defaults.RData")
   
   
   # I don't think anything needs to be sent in, it just needs to return the new scores somehow. 
