@@ -24,37 +24,38 @@ Both map functions
 	Right now, I think I'll just change the basemap and go from there. 
 
 
-Data's difference because the weights have now been update. 
-	Basemap should probably not be static then. Need a way to incorporate new weights or proposals but keep the old base_map
-	Could grab the proposals as the app starts up and save them. Might be best. 
+
 
 Add recalc basemap button for new weights. 
 Then could have two maps for filtering by layers. 
-
-
-Actiona plan 
-	Find a way to calculate a base_map that will use the as is proposals but be able to update when weights change
-		Load original proposals and save before the app begins?
-
-	bg_scores also needs to be updated	
-
-	Add in normalized scores
-
-	The only thing that's really off right now is the baseline scores. 
-
-
-
-	Merged_data actually needs to be update with new weights?
-
-
 
 
 Today's plan 
 	This will involve some pretty big changes so I'm going to go ahead and make a new branch to make sure I don't royally screw up the dashboard. 
 	Implement the maps as Derek suggested
 
-		What needs to happen when the big button is pushed?
-			Weights need to be updated on merged data and merged data parcels-> then a new base map needs to be created and a new scenario map 			needs to be created using the new weights and the most current parcel assignments. 
+
+		When online app loads, 
+			The first base map should probably already created	
+ 
+
+
+		What needs to happen when "Go!" is pushed?
+
+			For the basemap
+				This one is currently working, scores change when weights change but not when parcel assignments change. 
+
+	
+			For the scenario map 
+				Both weights and parcel assignments need to change, this shouldn't be a problem
+
+
+	Eventually need to fix the summary statistics, this really shouldn't be a problem so I'll save it for later. 
+
+
+	bg_scores also needs to be updated each time the weights change. 
+
+	New branch created?
 		
 
 
