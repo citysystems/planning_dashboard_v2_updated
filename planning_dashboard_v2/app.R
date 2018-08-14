@@ -86,7 +86,8 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                                     textOutput("new_sum_score"),
                                                                     textOutput("new_sspz_score"),
                                                                     textOutput("new_bg_avg"),
-                                                                    textOutput("new_sspz_avg"))
+                                                                    textOutput("new_sspz_avg"),
+                                                                    actionButton("update", "Update"))
                                                            )
                                                   ),
                                                   tabPanel("Data Table", dataTableOutput("data_table")),
@@ -124,7 +125,7 @@ server <- function(input, output) {
   
   
   # Scenario maps
-  returned_objects <- eventReactive(input$go,{make_map(df = base_map_reac()[[2]])})
+  returned_objects <- eventReactive(input$go | input$update , {make_map(df = base_map_reac()[[2]])})
   
   output$new_map <- renderLeaflet({returned_objects()[[1]]})
   output$data_table <- renderDataTable({returned_objects()[[2]]})
