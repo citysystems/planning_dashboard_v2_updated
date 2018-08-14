@@ -5,9 +5,9 @@ account: maxok
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 395177
-bundleId: 1535050
+bundleId: 1535302
 url: https://maxok.shinyapps.io/planning_dashboard_v2/
-when: 1534272744.48098
+when: 1534281955.52646
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: running notes.txt
