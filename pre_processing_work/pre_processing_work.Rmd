@@ -1,0 +1,55 @@
+---
+title: "Pre Processing Work"
+author: "Max O'Krepki"
+date: "August 14, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load the required libraries
+
+```{r}
+library(googlesheets)
+library(dplyr)
+```
+
+Set the wd
+
+```{r}
+setwd("C:\\Users\\Derek\\Documents\\GitHub\\planning_dashboard_v2_updated\\pre_processing_work")
+```
+
+
+The following part will be used to save the current conditions used in the baseline. 
+
+Read in the parcels proposals from google sheets
+
+```{r}
+sheet_url <- "https://docs.google.com/spreadsheets/d/1R7dxLoPc-AjvmsdbExF5i2XyfMtZHIG24ziTj-er8Rk/"
+# parcel_proposals <- read_csv("./inputs/parcel_proposals.csv", col_types = cols(APN = col_character(), type = col_character()))
+current_conditions <- gs_url(sheet_url) %>% gs_read("Sheet1", range = "A1:E60")
+current_conditions$APN <- as.character(current_conditions$APN)
+row.names(current_conditions) <- current_conditions$APN
+View(current_conditions)
+```
+
+
+Also read in current weights, this part will be used to save the default weights
+
+```{r}
+weights_url <- "https://docs.google.com/spreadsheets/d/18_XTChwbtd8dMn_7WDp_qXF6d_VXAhRexgjQTgJq0NY/"
+weights <- gs_url(weights_url) %>% gs_read("Sheet1", range = "A1:R18")
+row.names(weights) <- weights$type
+```
+
+
+Saving the current conditions and the default weights as the data defaults
+```{r}
+save(current_conditions, weights, file = "data_defaults.RData")
+```
+

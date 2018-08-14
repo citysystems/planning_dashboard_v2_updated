@@ -19,6 +19,44 @@ Add histograms
 What to do with the benchmark score?
 	Change map to SD's or whatever above, below the benchmark. Could also add benchmark by type to the filter. 
 
+Both map functions 
+	Have to update which attributes are plotted in both functions. 
+	Right now, I think I'll just change the basemap and go from there. 
+
+
+Data's difference because the weights have now been update. 
+	Basemap should probably not be static then. Need a way to incorporate new weights or proposals but keep the old base_map
+	Could grab the proposals as the app starts up and save them. Might be best. 
+
+Add recalc basemap button for new weights. 
+Then could have two maps for filtering by layers. 
+
+
+Actiona plan 
+	Find a way to calculate a base_map that will use the as is proposals but be able to update when weights change
+		Load original proposals and save before the app begins?
+
+	bg_scores also needs to be updated	
+
+	Add in normalized scores
+
+	The only thing that's really off right now is the baseline scores. 
+
+
+
+	Merged_data actually needs to be update with new weights?
+
+
+
+
+Today's plan 
+	This will involve some pretty big changes so I'm going to go ahead and make a new branch to make sure I don't royally screw up the dashboard. 
+	Implement the maps as Derek suggested
+
+		What needs to happen when the big button is pushed?
+			Weights need to be updated on merged data and merged data parcels-> then a new base map needs to be created and a new scenario map 			needs to be created using the new weights and the most current parcel assignments. 
+		
+
 
 
 current testing variables 
@@ -29,6 +67,8 @@ Saved data
 "dashboard_data.RData" = "bg_scores"           "biking"              "merged_data"         "merged_data_parcels"  "ideal_data";
 
 "dashboard_map_data.RData" = "base_map"      "data.shape"    "sspz_boundary"
+
+"data_defaults.RData" = "current_conditions"  "weights"
 
 
 

@@ -9,12 +9,16 @@ scenario <- function(type = "All") {
   # I don't think anything needs to be sent in, it just needs to return the new scores somehow. 
   # tic()
   
-  # Load proposals
-  sheet_url <- "https://docs.google.com/spreadsheets/d/1R7dxLoPc-AjvmsdbExF5i2XyfMtZHIG24ziTj-er8Rk/"
-  # parcel_proposals <- read_csv("./inputs/parcel_proposals.csv", col_types = cols(APN = col_character(), type = col_character()))
-  parcel_proposals <- gs_url(sheet_url) %>% gs_read("Sheet1", range = "A1:E60")
-  parcel_proposals$APN <- as.character(parcel_proposals$APN)
-  row.names(parcel_proposals) <- parcel_proposals$APN
+  use_new = TRUE
+  
+  if (use_new) {
+    # Load proposals
+    sheet_url <- "https://docs.google.com/spreadsheets/d/1R7dxLoPc-AjvmsdbExF5i2XyfMtZHIG24ziTj-er8Rk/"
+    # parcel_proposals <- read_csv("./inputs/parcel_proposals.csv", col_types = cols(APN = col_character(), type = col_character()))
+    parcel_proposals <- gs_url(sheet_url) %>% gs_read("Sheet1", range = "A1:E60")
+    parcel_proposals$APN <- as.character(parcel_proposals$APN)
+    row.names(parcel_proposals) <- parcel_proposals$APN
+  }
   
   
   # Load the weights
@@ -43,13 +47,13 @@ scenario <- function(type = "All") {
   # This is exactly what I needed. 
   temp_merged <- merged_data_parcels %>% full_join(parcel_proposals, by = c( "parcel" = "APN"))
   temp_merged$rank <- NA
-
   
- 
+  
+  
   temp_merged <- weight_adder(temp_merged, weights)
-
   
- 
+  
+  
   # Now just need to append the two dataframes and update the ranks where appropriate
   
   # For now, I'll just keep all but could easily trim each subset to only the desired amount of each amenity. 
@@ -74,7 +78,7 @@ scenario <- function(type = "All") {
   temp_merged <- bind_rows(lapply(split.data.frame(temp_merged, f = temp_merged$spatial_id), type_splitter))
   
   
-
+  
   
   # Removing the NA ranks. 
   temp_merged <- temp_merged[complete.cases(temp_merged$rank),]
@@ -100,7 +104,7 @@ scenario <- function(type = "All") {
   
   
   # Below here has to change. 
- 
+  
   new_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('new_score' = sum(scores, na.rm = TRUE))
   
   return(new_scores)
@@ -109,7 +113,7 @@ scenario <- function(type = "All") {
   # 
   # bg_scores$diff <- bg_scores$access_score2- bg_scores$access_score
   # bg_scores$diff_prcnt <- bg_scores$access_score2/bg_scores$access_score
- 
+  
   
   # toc()
 }

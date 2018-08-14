@@ -25,7 +25,8 @@ source("make_map_base.R")
 
 load("dashboard_data.RData")
 load("dashboard_map_data.RData")
-load(".RData")
+load("data_defaults.RData")
+# load(".RData")
 
 # This has base_map, data.shape, and sspz_boundary
 # save(base_map, data.shape, sspz_boundary, file = "dashboard_map_data.RData")
@@ -40,9 +41,18 @@ load(".RData")
 
 # Stuff used for building 
 # setwd("C:\\Users\\Max\\Dropbox\\City_Systems\\Scores_Tools\\planning_dashboard\\planning_dashboard_v2\\planning_dashboard_v2")
+# setwd("C:\\Users\\Derek\\Documents\\GitHub\\planning_dashboard_v2_updated\\planning_dashboard_v2")
 
 # Creating required variables for use later on 
 list_options <- c("All",unique(merged_data$type))
+
+# Loading and saving the status quo proposals. 
+# Load proposals
+sheet_url <- "https://docs.google.com/spreadsheets/d/1R7dxLoPc-AjvmsdbExF5i2XyfMtZHIG24ziTj-er8Rk/"
+# parcel_proposals <- read_csv("./inputs/parcel_proposals.csv", col_types = cols(APN = col_character(), type = col_character()))
+parcel_proposals_sq <- gs_url(sheet_url) %>% gs_read("Sheet1", range = "A1:E60")
+parcel_proposals_sq$APN <- as.character(parcel_proposals_sq$APN)
+row.names(parcel_proposals_sq) <- parcel_proposals_sq$APN
 
 
 # Define UI 
@@ -111,6 +121,7 @@ server <- function(input, output) {
   
   
   # Maps
+  # When using the static base map
   output$benchmap <- renderLeaflet({base_map})
   
   returned_objects <- eventReactive(input$recalc,{make_map()})

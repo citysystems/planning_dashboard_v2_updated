@@ -9,6 +9,7 @@ make_map_base <- function(type = "All") {
   new_scores <- scenario(type)
   
   data.shape@data <- left_join(data.shape@data, new_scores, by = "spatial_id")
+  data.shape@data$bench_ratio <- data.shape$new_score/sum(ideal_data$score)
   data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$access_score)
   
   
@@ -18,20 +19,20 @@ make_map_base <- function(type = "All") {
   # print(sum(new_scores$new_score))
   
   # For testing 
-  # View(data.shape@data)
+  View(data.shape@data)
   
   # palette = c("white","darkgreen"),
   
   
   pal <- colorNumeric(
     palette = "RdYlGn",
-    domain = data.shape@data$new_score)
+    domain = data.shape@data$bench_ratio)
   
   new_map <- leaflet(data.shape) %>% 
     addTiles() %>%
     addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.9, smoothFactor = 0.5,
-                color=~pal(new_score),weight = 1) %>%
-    addLegend("bottomright", pal = pal, values = ~new_score,
+                color=~pal(bench_ratio),weight = 1) %>%
+    addLegend("bottomright", pal = pal, values = ~bench_ratio,
               title = "New Scores",
               labFormat = labelFormat(prefix = ""),
               opacity = 1
