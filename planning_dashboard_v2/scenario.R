@@ -1,4 +1,4 @@
-scenario <- function(type = "All") {
+scenario <- function(type = "All", use_new = TRUE) {
   
   # When I clear everything, it can't seem to find merged_data_parcels. This is a hacker fix. 
   # Seems to work just fine on shinyapps so I really don't know what's going on. 
@@ -9,7 +9,7 @@ scenario <- function(type = "All") {
   # I don't think anything needs to be sent in, it just needs to return the new scores somehow. 
   # tic()
   
-  use_new = TRUE
+  
   
   if (use_new) {
     # Load proposals
@@ -18,6 +18,8 @@ scenario <- function(type = "All") {
     parcel_proposals <- gs_url(sheet_url) %>% gs_read("Sheet1", range = "A1:E60")
     parcel_proposals$APN <- as.character(parcel_proposals$APN)
     row.names(parcel_proposals) <- parcel_proposals$APN
+  } else {
+    parcel_proposals <- current_conditions
   }
   
   
@@ -47,6 +49,15 @@ scenario <- function(type = "All") {
   # This is exactly what I needed. 
   temp_merged <- merged_data_parcels %>% full_join(parcel_proposals, by = c( "parcel" = "APN"))
   temp_merged$rank <- NA
+  
+  
+  # tk - adjust weight adder here to change the weights for merged_data as well
+  # Subset doesn't appear to work 
+  # merged_data <- subset(merged_data, selecct = -c(abs_good)) 
+  
+  # Could use this if the above function doesn't work. 
+  merged_data <- merged_data[,-which(names(merged_data) == "abs_good")]
+  merged_data <- weight_adder(merged_data, weights)
   
   
   

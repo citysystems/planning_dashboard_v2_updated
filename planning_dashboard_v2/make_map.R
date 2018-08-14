@@ -1,13 +1,13 @@
-make_map <- function(type = "All") {
+make_map <- function(type = "All", df) {
   
   
   # Used for testing, this does allow data.shape to start with a clean slate each time. 
   load("dashboard_map_data.RData")
   
-  new_scores <- scenario(type)
+  new_scores <- scenario(type = type, use_new = TRUE)
   
-  data.shape@data <- left_join(data.shape@data, new_scores, by = "spatial_id")
-  data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$access_score)
+  data.shape@data <- left_join(data.shape@data, new_scores, by = "spatial_id") %>% left_join(df)
+  data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$raw_score)
   
   # For testing 
   # View(data.shape@data)
@@ -28,6 +28,8 @@ make_map <- function(type = "All") {
               labFormat = labelFormat(prefix = ""),
               opacity = 1
     )
+  
+  # View(data.shape@data)
   
   returned_objects <- list("map" = new_map, "data" = data.shape@data)
   
