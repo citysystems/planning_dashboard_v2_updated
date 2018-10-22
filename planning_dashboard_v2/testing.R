@@ -1,0 +1,12 @@
+rm(list = ls())
+getwd()
+setwd("C:/Users/jlund/Documents/GitHub/planning_dashboard_v2_updated/planning_dashboard_v2")
+load(".RData")
+#source('gen_report.R')
+#source('update_cost.R')
+#install.packages('shinyalert')
+#install.packages('ggplot2')
+#parcel_data <- get(load("epa_parcel_data_merged.RData"))
+
+#save.image(file= ".RData")
+#install.packages('shinydashboard')

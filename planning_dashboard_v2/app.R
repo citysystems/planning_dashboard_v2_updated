@@ -69,6 +69,7 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                     mainPanel(
                                       tabsetPanel(type = "tabs",
                                                   tabPanel("Map",
+                                                           selectInput("type_filter","Amenity Types", list_options),
                                                            fluidRow( 
                                                              column(6, 
                                                                     leafletOutput("basemap")),
@@ -90,14 +91,14 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                                     actionButton("update", "Update"))
                                                            )
                                                   ),
-                                                  tabPanel("Data Table", dataTableOutput("data_table")),
-                                                  tabPanel("Analysis by Type",
-                                                           selectInput("type_filter","Amenity Types", list_options),
-                                                           leafletOutput("map_type")))
+                                                  tabPanel("Data Table", dataTableOutput("data_table"))#,
+                                                  #tabPanel("Analysis by Type",
+                                                  #         selectInput("type_filter","Amenity Types", list_options),
+                                                  #         leafletOutput("map_type")))
                                     ) # End main panel
                                   )
                                   
-                         ), # end of scores tabs
+                         )), # end of scores tabs
                          
                          
                          
@@ -125,13 +126,21 @@ server <- function(input, output) {
   
   
   # Scenario maps
-  returned_objects <- eventReactive(input$go | input$update , {make_map(df = base_map_reac()[[2]])})
+  returned_objects <- eventReactive(input$go | input$update, {make_map(type = input$type_filter, df = base_map_reac()[[2]])})
   
   output$new_map <- renderLeaflet({returned_objects()[[1]]})
   output$data_table <- renderDataTable({returned_objects()[[2]]})
   
+  observeEvent(input$type_filter, {
+    returned_objects <- eventReactive(input$go | input$update, {make_map(type = input$type_filter, df = base_map_reac()[[2]])})
+    
+    output$new_map <- renderLeaflet({returned_objects()[[1]]})
+    output$data_table <- renderDataTable({returned_objects()[[2]]})
+  })
+  
   # Filtered Map
   observeEvent(input$type_filter, {
+    output$basemap <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
     output$map_type <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
   })
   
