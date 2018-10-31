@@ -1,14 +1,29 @@
 make_map <- function(type = "All", df) {
   
-  
+  df <- select(df, 'spatial_id', 'name', 'VALUE0', 'FIPS', 'raw_score')
   # Used for testing, this does allow data.shape to start with a clean slate each time. 
   load("dashboard_map_data.RData")
   
-  new_scores <- scenario(type = type, use_new = TRUE)
+  scenarioCalc <- scenario(type = type, use_new = TRUE)
+  scores <- select(scenarioCalc, "new_score", "spatial_id")
+  scoresAbs <- select(scenarioCalc, "new_scoreAbs", "spatial_id")
+  scoresBike <- select(scenarioCalc, "new_scoreBike", "spatial_id")
+  scoresDrive <- select(scenarioCalc, "new_scoreDrive", "spatial_id")
+  scoresTransit <- select(scenarioCalc, "new_scoreTransit", "spatial_id")
+  scoresWalk <- select(scenarioCalc, "new_scoreWalk", "spatial_id")
+  scoresIdeal <- select(scenarioCalc, "new_scoreIdeal", "spatial_id")
   
-  data.shape@data <- left_join(data.shape@data, new_scores, by = "spatial_id") %>% left_join(df)
-  data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$raw_score)
+  data.shape@data <- left_join(data.shape@data, scores, by = "spatial_id")  %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresAbs, by = "spatial_id") %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresBike, by = "spatial_id") %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresDrive, by = "spatial_id") %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresTransit, by = "spatial_id") %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresWalk, by = "spatial_id") %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresIdeal, by = "spatial_id") %>% left_join(df)
   
+  #data.shape@data <- left_join(data.shape@data, new_scores, by = "spatial_id") %>% left_join(df)
+  #data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$raw_score)
+  data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$new_scoreIdeal)
   # For testing 
   # View(data.shape@data)
   
@@ -36,3 +51,4 @@ make_map <- function(type = "All", df) {
   return(returned_objects)
   
 }
+

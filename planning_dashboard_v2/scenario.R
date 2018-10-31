@@ -111,15 +111,34 @@ scenario <- function(type = "All", use_new = TRUE) {
   
   # print(nrow(temp_merged))
   
-  
-  temp_merged$scores <- score_calc(temp_merged$time_biking, temp_merged$time_driving, temp_merged$time_transit, temp_merged$time_walking, temp_merged$abs_good, temp_merged$rank, temp_merged$type)
-  
+  #Delete below and use above
+  scoreCalc <- score_calc(temp_merged$time_biking, temp_merged$time_driving, temp_merged$time_transit, temp_merged$time_walking, temp_merged$abs_good, temp_merged$rank, temp_merged$type)
+  temp_merged$scores <- scoreCalc[[1]]
+  temp_merged$scoresAbs <- scoreCalc[[2]]
+  temp_merged$scoresBike <- scoreCalc[[3]]
+  temp_merged$scoresDrive <- scoreCalc[[4]]
+  temp_merged$scoresTransit <- scoreCalc[[5]]
+  temp_merged$scoresWalk <- scoreCalc[[6]]
+  temp_merged$scoresIdeal <- scoreCalc[[7]]
   
   # Below here has to change. 
-  
   new_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('new_score' = sum(scores, na.rm = TRUE))
+  new_scoresAbs <- temp_merged %>% group_by(spatial_id) %>% summarise('new_scoreAbs' = sum(scoresAbs, na.rm = TRUE))
+  new_scoresBike <- temp_merged %>% group_by(spatial_id) %>% summarise('new_scoreBike' = sum(scoresBike, na.rm = TRUE))
+  new_scoresDrive <- temp_merged %>% group_by(spatial_id) %>% summarise('new_scoreDrive' = sum(scoresDrive, na.rm = TRUE))
+  new_scoresTransit <- temp_merged %>% group_by(spatial_id) %>% summarise('new_scoreTransit' = sum(scoresTransit, na.rm = TRUE))
+  new_scoresWalk <- temp_merged %>% group_by(spatial_id) %>% summarise('new_scoreWalk' = sum(scoresWalk, na.rm = TRUE))
+  new_scoresIdeal <- temp_merged %>% group_by(spatial_id) %>% summarise('new_scoreIdeal' = sum(scoresIdeal, na.rm = TRUE))
+  scoresFinal <- left_join(new_scores, new_scoresAbs, by='spatial_id')
+  scoresFinal <- left_join(scoresFinal, new_scoresBike, by='spatial_id')
+  scoresFinal <- left_join(scoresFinal, new_scoresDrive, by='spatial_id')
+  scoresFinal <- left_join(scoresFinal, new_scoresTransit, by='spatial_id')
+  scoresFinal <- left_join(scoresFinal, new_scoresWalk, by='spatial_id')
+  scoresFinal <- left_join(scoresFinal, new_scoresIdeal, by='spatial_id')
+  return(scoresFinal)
+  #new_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('new_score' = sum(scores, na.rm = TRUE))
   
-  return(new_scores)
+  #return(new_scores)
   
   # bg_scores <- temp_merged %>% group_by(spatial_id) %>% summarise('access_score2' = sum(scores, na.rm = TRUE)) %>% left_join(bg_scores)
   # 

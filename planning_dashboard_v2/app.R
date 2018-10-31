@@ -36,7 +36,7 @@ load("data_defaults.RData")
 
 # save(bg_scores, merged_data, merged_data_parcels, biking, file = "dashboard_data.RData")
 # subset(bg_scores, select = c(spatial_id, access_score2))
-# names(bg_scores)[2] <- "baseline_score"
+# names(bg_scores)[2] <- "access_score"
 
 
 # Stuff used for building 
@@ -69,6 +69,7 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                     mainPanel(
                                       tabsetPanel(type = "tabs",
                                                   tabPanel("Map",
+                                                           selectInput("type_filter","Amenity Types", list_options),
                                                            fluidRow( 
                                                              column(6, 
                                                                     leafletOutput("basemap")),
@@ -90,14 +91,14 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                                     actionButton("update", "Update"))
                                                            )
                                                   ),
-                                                  tabPanel("Data Table", dataTableOutput("data_table")),
-                                                  tabPanel("Analysis by Type",
-                                                           selectInput("type_filter","Amenity Types", list_options),
-                                                           leafletOutput("map_type")))
-                                    ) # End main panel
-                                  )
-                                  
-                         ), # end of scores tabs
+                                                  tabPanel("Data Table", dataTableOutput("data_table"))#,
+                                                  #tabPanel("Analysis by Type",
+                                                  #         selectInput("type_filter","Amenity Types", list_options),
+                                                  #         leafletOutput("map_type")))
+                                      ) # End main panel
+                                    )
+                                    
+                                  )), # end of scores tabs
                          
                          
                          
@@ -125,28 +126,45 @@ server <- function(input, output) {
   
   
   # Scenario maps
-  returned_objects <- eventReactive(input$go | input$update , {make_map(df = base_map_reac()[[2]])})
+  returned_objects <- eventReactive(input$go | input$update, {make_map(type = input$type_filter, df = base_map_reac()[[2]])})
   
   output$new_map <- renderLeaflet({returned_objects()[[1]]})
   output$data_table <- renderDataTable({returned_objects()[[2]]})
   
-  # Filtered Map
-  observeEvent(input$type_filter, {
-    output$map_type <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
-  })
-  
   # Summary stats
-  output$sum_score <- renderText({paste("Benchmark total score:" , round(sum(bg_scores$baseline_score)))})
+  output$sum_score <- renderText({paste("Benchmark total score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)))})
   output$new_sum_score <- renderText({paste("Scenario total score:" , round(sum(returned_objects()[[2]]$new_score)))})
   
-  output$sspz_score <- renderText({paste("Benchmark promise zone score:",round(sum(filter(bg_scores, spatial_id %in% sspz_bgs$spatial_id)$baseline_score)))})
+  output$sspz_score <- renderText({paste("Benchmark promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)))})
   output$new_sspz_score <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)))})
   
-  output$bg_avg <- renderText({paste("Benchmark average block group score:" , round(sum(bg_scores$baseline_score)/nrow(bg_scores)))})
-  output$sspz_avg <- renderText({paste("Benchmark promise zone average block groupscore:",round(sum(filter(bg_scores, spatial_id %in% sspz_bgs$spatial_id)$baseline_score)/nrow(sspz_bgs)))})
+  output$bg_avg <- renderText({paste("Benchmark average block group score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores)))})
+  output$sspz_avg <- renderText({paste("Benchmark promise zone average block groupscore:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)/nrow(sspz_bgs)))})
   
   output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score)/nrow(bg_scores)))})
   output$new_sspz_avg <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/nrow(sspz_bgs)))})
+  
+  observeEvent(input$type_filter, {
+    returned_objects <- eventReactive(input$go | input$update, {make_map(type = input$type_filter, df = base_map_reac()[[2]])})
+    output$new_map <- renderLeaflet({returned_objects()[[1]]})
+    output$data_table <- renderDataTable({returned_objects()[[2]]})
+    output$basemap <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
+    output$map_type <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
+    # Summary stats
+    output$sum_score <- renderText({paste("Benchmark total score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)))})
+    output$new_sum_score <- renderText({paste("Scenario total score:" , round(sum(returned_objects()[[2]]$new_score)))})
+    
+    output$sspz_score <- renderText({paste("Benchmark promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)))})
+    output$new_sspz_score <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)))})
+    
+    output$bg_avg <- renderText({paste("Benchmark average block group score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores)))})
+    output$sspz_avg <- renderText({paste("Benchmark promise zone average block groupscore:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)/nrow(sspz_bgs)))})
+    
+    output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score)/nrow(bg_scores)))})
+    output$new_sspz_avg <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/nrow(sspz_bgs)))})
+  })
+  
+  
   
   # Rendering the iframes
   output$weights <- renderUI({
