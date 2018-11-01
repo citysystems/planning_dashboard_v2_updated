@@ -198,3 +198,11 @@ ideal_dummy<-data.frame("vacant",10,10,10,10,10,10,10)
 names(ideal_dummy)<-names(ideal_data)
 newdf <- rbind(ideal_dummy, newdf)
 
+
+load("dashboard_map_data.RData")
+
+
+scenarioCalcBenchmark <- scenario(type = 'All', use_new = FALSE)
+scoresBenchmark <- select(scenarioCalcBenchmark, "new_score", "spatial_id")
+names(scoresBenchmark) <- c('new_scoreBenchmark', 'spatial_id')
+names(scoresBenchmark)

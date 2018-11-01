@@ -10,7 +10,12 @@ save.image(file= ".RData")
 weights2 <- read.csv('weights.csv')
 write.csv('data_defaults.RData', file = "data_defaults.csv")
 
+help("~")
 
+data.shape@data$score_ratio
+
+
+nrow(sspz_bgs)
 write.csv('dashboard_data.RData', file = "dashboard_data.csv")
 
 write.csv('dashboard_map_data.RData', file = "dashboard_map_data.csv")

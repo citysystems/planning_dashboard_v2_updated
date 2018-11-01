@@ -79,11 +79,13 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                            br(),
                                                            fluidRow(
                                                              column(6, 
+                                                                    strong('Baseline Analysis'),
                                                                     textOutput("sum_score"),
                                                                     textOutput("sspz_score"),
                                                                     textOutput("bg_avg"),
                                                                     textOutput("sspz_avg")),
                                                              column(6,
+                                                                    strong('Scenario Analysis'),
                                                                     textOutput("new_sum_score"),
                                                                     textOutput("new_sspz_score"),
                                                                     textOutput("new_bg_avg"),
@@ -120,9 +122,11 @@ server <- function(input, output) {
   # tk - could combine both eventReactives relying on go
   
   # The base map 
-  base_map_reac <- eventReactive(input$go, {make_map_base()})
+  base_map_reac <- eventReactive(input$go | input$update, {make_map_base(type = input$type_filter)})
   
   output$basemap <- renderLeaflet({base_map_reac()[[1]]})
+  
+  #returned_objects_OG <- eventReactive(input$go | input$update, {make_map_base(type = input$type_filter)})
   
   
   # Scenario maps
@@ -132,36 +136,37 @@ server <- function(input, output) {
   output$data_table <- renderDataTable({returned_objects()[[2]]})
   
   # Summary stats
-  output$sum_score <- renderText({paste("Benchmark total score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)))})
-  output$new_sum_score <- renderText({paste("Scenario total score:" , round(sum(returned_objects()[[2]]$new_score)))})
+  output$sum_score <- renderText({paste("Citywide accessibility:" , round(sum(returned_objects()[[2]]$new_scoreBenchmark)/sum(returned_objects()[[2]]$new_scoreIdeal),digits = 2), "(raw: ", round(sum(returned_objects()[[2]]$new_scoreBenchmark)), "/ benchmark", round(sum(returned_objects()[[2]]$new_scoreIdeal)),")")})
+  output$new_sum_score <- renderText({paste("Citywide accessibility:" , round(sum(returned_objects()[[2]]$new_score)/sum(returned_objects()[[2]]$new_scoreIdeal),digits = 2), "(raw: ", round(sum(returned_objects()[[2]]$new_score)), "/ benchmark", round(sum(returned_objects()[[2]]$new_scoreIdeal)),")")})
   
-  output$sspz_score <- renderText({paste("Benchmark promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)))})
-  output$new_sspz_score <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)))})
+  output$sspz_score <- renderText({paste("South Stockton accessibility:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark)/sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal),digits = 2), "(raw: ", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark)), "/ benchmark", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)),")")})
+  output$new_sspz_score <- renderText({paste("South Stockton accessibility:", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal),digits = 2), "(raw: ", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)), "/ benchmark", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)),")")})
   
-  output$bg_avg <- renderText({paste("Benchmark average block group score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores)))})
-  output$sspz_avg <- renderText({paste("Benchmark promise zone average block groupscore:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)/nrow(sspz_bgs)))})
+  #output$bg_avg <- renderText({paste("Baseline average block group score:" , round(sum(returned_objects()[[2]]$new_scoreBenchmark/returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores), digits = 2))})
+  #output$sspz_avg <- renderText({paste("Baseline promise zone average block groupscore:", round((sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark/filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal))/nrow(sspz_bgs),digits = 2))})
   
-  output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score)/nrow(bg_scores)))})
-  output$new_sspz_avg <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/nrow(sspz_bgs)))})
+  #output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score/returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores),digits = 2))})
+  #output$new_sspz_avg <- renderText({paste("Scenario promise zone average score:",round((sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score/filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal))/nrow(sspz_bgs),digits = 2))})
   
   observeEvent(input$type_filter, {
     returned_objects <- eventReactive(input$go | input$update, {make_map(type = input$type_filter, df = base_map_reac()[[2]])})
+    base_map_reac <- eventReactive(input$go | input$update, {make_map_base(type = input$type_filter)})
     output$new_map <- renderLeaflet({returned_objects()[[1]]})
     output$data_table <- renderDataTable({returned_objects()[[2]]})
     output$basemap <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
     output$map_type <- renderLeaflet({make_map_base(input$type_filter)[[1]]})
     # Summary stats
-    output$sum_score <- renderText({paste("Benchmark total score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)))})
-    output$new_sum_score <- renderText({paste("Scenario total score:" , round(sum(returned_objects()[[2]]$new_score)))})
+    output$sum_score <- renderText({paste("Citywide accessibility:" , round(sum(returned_objects()[[2]]$new_scoreBenchmark)/sum(returned_objects()[[2]]$new_scoreIdeal),digits = 2), "(raw: ", round(sum(returned_objects()[[2]]$new_scoreBenchmark)), "/ benchmark", round(sum(returned_objects()[[2]]$new_scoreIdeal)),")")})
+    output$new_sum_score <- renderText({paste("Citywide accessibility:" , round(sum(returned_objects()[[2]]$new_score)/sum(returned_objects()[[2]]$new_scoreIdeal),digits = 2), "(raw: ", round(sum(returned_objects()[[2]]$new_score)), "/ benchmark", round(sum(returned_objects()[[2]]$new_scoreIdeal)),")")})
     
-    output$sspz_score <- renderText({paste("Benchmark promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)))})
-    output$new_sspz_score <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)))})
+    output$sspz_score <- renderText({paste("South Stockton accessibility:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark)/sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal),digits = 2), "(raw: ", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark)), "/ benchmark", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)),")")})
+    output$new_sspz_score <- renderText({paste("South Stockton accessibility:", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal),digits = 2), "(raw: ", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)), "/ benchmark", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)),")")})
     
-    output$bg_avg <- renderText({paste("Benchmark average block group score:" , round(sum(returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores)))})
-    output$sspz_avg <- renderText({paste("Benchmark promise zone average block groupscore:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)/nrow(sspz_bgs)))})
+    #output$bg_avg <- renderText({paste("Baseline average block group score:" , round(sum(returned_objects()[[2]]$new_scoreBenchmark/returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores), digits = 2))})
+    #output$sspz_avg <- renderText({paste("Baseline promise zone average block groupscore:", round((sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark/filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal))/nrow(sspz_bgs),digits = 2))})
     
-    output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score)/nrow(bg_scores)))})
-    output$new_sspz_avg <- renderText({paste("Scenario promise zone score:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/nrow(sspz_bgs)))})
+    #output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score/returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores),digits = 2))})
+    #output$new_sspz_avg <- renderText({paste("Scenario promise zone average score:",round((sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score/filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal))/nrow(sspz_bgs),digits = 2))})
   })
   
   

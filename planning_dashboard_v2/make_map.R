@@ -5,7 +5,10 @@ make_map <- function(type = "All", df) {
   load("dashboard_map_data.RData")
   
   scenarioCalc <- scenario(type = type, use_new = TRUE)
+  scenarioCalcBenchmark <- scenario(type = type, use_new = FALSE)
   scores <- select(scenarioCalc, "new_score", "spatial_id")
+  scoresBenchmark <- select(scenarioCalcBenchmark, "new_score", "spatial_id")
+  names(scoresBenchmark) <- c('new_scoreBenchmark', 'spatial_id')
   scoresAbs <- select(scenarioCalc, "new_scoreAbs", "spatial_id")
   scoresBike <- select(scenarioCalc, "new_scoreBike", "spatial_id")
   scoresDrive <- select(scenarioCalc, "new_scoreDrive", "spatial_id")
@@ -14,6 +17,7 @@ make_map <- function(type = "All", df) {
   scoresIdeal <- select(scenarioCalc, "new_scoreIdeal", "spatial_id")
   
   data.shape@data <- left_join(data.shape@data, scores, by = "spatial_id")  %>% left_join(df)
+  data.shape@data <- left_join(data.shape@data, scoresBenchmark, by = "spatial_id")  %>% left_join(df)
   data.shape@data <- left_join(data.shape@data, scoresAbs, by = "spatial_id") %>% left_join(df)
   data.shape@data <- left_join(data.shape@data, scoresBike, by = "spatial_id") %>% left_join(df)
   data.shape@data <- left_join(data.shape@data, scoresDrive, by = "spatial_id") %>% left_join(df)
@@ -22,8 +26,8 @@ make_map <- function(type = "All", df) {
   data.shape@data <- left_join(data.shape@data, scoresIdeal, by = "spatial_id") %>% left_join(df)
   
   #data.shape@data <- left_join(data.shape@data, new_scores, by = "spatial_id") %>% left_join(df)
-  #data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$raw_score)
-  data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$new_scoreIdeal)
+  data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$new_scoreBenchmark)
+  #data.shape@data$score_ratio <- (data.shape@data$new_score/data.shape@data$new_scoreIdeal)
   # For testing 
   # View(data.shape@data)
   
