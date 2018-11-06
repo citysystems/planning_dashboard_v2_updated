@@ -48,15 +48,19 @@ list_options <- c("All",unique(merged_data$type))
 
 # Define UI 
 ui <- shinyUI(navbarPage("Planning Dashboard",
+                         #Map of amenities
                          tabPanel("Amenity Locations",
                                   htmlOutput("frame1")),
+                         #Table of weights
                          tabPanel("Weightings ",
                                   htmlOutput("weights")), 
+                         #Table with proposed parcel land uses
                          tabPanel("Parcel Proposals ",
                                   htmlOutput("parcels_sheet")),
-                         
-                         
+                        
+                         #Panel with map and table of accessibility scores
                          tabPanel("Score Calculations",
+                                  #Sidebar with go for calculation and a download data button - does this button work?
                                   sidebarLayout( 
                                     sidebarPanel(
                                       h5("Refer to the following link to create scenarios"),
@@ -68,8 +72,12 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                     ),
                                     mainPanel(
                                       tabsetPanel(type = "tabs",
+                                                  #Maps - baseline and scenario score maps
                                                   tabPanel("Map",
+                                                           #Type filter
                                                            selectInput("type_filter","Amenity Types", list_options),
+                                                           
+                                                           #Maps
                                                            fluidRow( 
                                                              column(6, 
                                                                     leafletOutput("basemap")),
@@ -77,6 +85,8 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                                     leafletOutput("new_map"))
                                                            ), # End fluid row
                                                            br(),
+                                                           
+                                                           #Output score values
                                                            fluidRow(
                                                              column(6, 
                                                                     strong('Baseline Analysis'),
@@ -93,8 +103,10 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                                                                     actionButton("update", "Update"))
                                                            )
                                                   ),
+                                                  #Data Table of scores
                                                   tabPanel("Data Table", dataTableOutput("data_table"))#,
-                                                  #tabPanel("Analysis by Type",
+                                                  
+                                                  #OUTDATED: tabPanel("Analysis by Type",
                                                   #         selectInput("type_filter","Amenity Types", list_options),
                                                   #         leafletOutput("map_type")))
                                       ) # End main panel
@@ -105,12 +117,12 @@ ui <- shinyUI(navbarPage("Planning Dashboard",
                          
                          
                          
-                         
+                         #Map of parcels on airport way
                          tabPanel("Airport Way Parcels",
                                   htmlOutput("frame2"))
 ))
 
-# Define server logic required to draw a histogram
+# Define server logic
 server <- function(input, output) {
   
   
@@ -121,7 +133,7 @@ server <- function(input, output) {
   
   # tk - could combine both eventReactives relying on go
   
-  # The base map 
+  # The base map-create when go or update is pressed
   base_map_reac <- eventReactive(input$go | input$update, {make_map_base(type = input$type_filter)})
   
   output$basemap <- renderLeaflet({base_map_reac()[[1]]})
@@ -135,19 +147,22 @@ server <- function(input, output) {
   output$new_map <- renderLeaflet({returned_objects()[[1]]})
   output$data_table <- renderDataTable({returned_objects()[[2]]})
   
-  # Summary stats
+  # Summary stats - accessibility scores - normalized and raw sums (citywide and south stockton)
   output$sum_score <- renderText({paste("Citywide accessibility:" , round(sum(returned_objects()[[2]]$new_scoreBenchmark)/sum(returned_objects()[[2]]$new_scoreIdeal),digits = 2), "(raw: ", round(sum(returned_objects()[[2]]$new_scoreBenchmark)), "/ benchmark", round(sum(returned_objects()[[2]]$new_scoreIdeal)),")")})
   output$new_sum_score <- renderText({paste("Citywide accessibility:" , round(sum(returned_objects()[[2]]$new_score)/sum(returned_objects()[[2]]$new_scoreIdeal),digits = 2), "(raw: ", round(sum(returned_objects()[[2]]$new_score)), "/ benchmark", round(sum(returned_objects()[[2]]$new_scoreIdeal)),")")})
   
   output$sspz_score <- renderText({paste("South Stockton accessibility:",round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark)/sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal),digits = 2), "(raw: ", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark)), "/ benchmark", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)),")")})
   output$new_sspz_score <- renderText({paste("South Stockton accessibility:", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)/sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal),digits = 2), "(raw: ", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score)), "/ benchmark", round(sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal)),")")})
   
+  
+  #OUTDATED
   #output$bg_avg <- renderText({paste("Baseline average block group score:" , round(sum(returned_objects()[[2]]$new_scoreBenchmark/returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores), digits = 2))})
   #output$sspz_avg <- renderText({paste("Baseline promise zone average block groupscore:", round((sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreBenchmark/filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal))/nrow(sspz_bgs),digits = 2))})
   
   #output$new_bg_avg <- renderText({paste("Scenario average block group score:" , round(sum(returned_objects()[[2]]$new_score/returned_objects()[[2]]$new_scoreIdeal)/nrow(bg_scores),digits = 2))})
   #output$new_sspz_avg <- renderText({paste("Scenario promise zone average score:",round((sum(filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_score/filter(returned_objects()[[2]], spatial_id %in% sspz_bgs$spatial_id)$new_scoreIdeal))/nrow(sspz_bgs),digits = 2))})
   
+  #Recreating the above for when type filter is applied
   observeEvent(input$type_filter, {
     returned_objects <- eventReactive(input$go | input$update, {make_map(type = input$type_filter, df = base_map_reac()[[2]])})
     base_map_reac <- eventReactive(input$go | input$update, {make_map_base(type = input$type_filter)})

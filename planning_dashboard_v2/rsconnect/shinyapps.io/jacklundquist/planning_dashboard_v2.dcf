@@ -5,9 +5,9 @@ account: jacklundquist
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 529016
-bundleId: 1674611
+bundleId: 1677045
 url: https://jacklundquist.shinyapps.io/planning_dashboard_v2/
-when: 1541003935.90023
+when: 1541097379.26482
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: dashboard_data.csv|dashboard_map_data.csv|data_defaults.csv|ideal.csv|merged_data.csv|merged_data_parcels.csv|new_scores.csv|running notes.txt|scenario_TEST.R|temp_merged.csv|testing.R|weights.csv|weights2.csv

@@ -3,9 +3,11 @@ make_map <- function(type = "All", df) {
   df <- select(df, 'spatial_id', 'name', 'VALUE0', 'FIPS', 'raw_score')
   # Used for testing, this does allow data.shape to start with a clean slate each time. 
   load("dashboard_map_data.RData")
-  
+  #Generate scores for new scenario
   scenarioCalc <- scenario(type = type, use_new = TRUE)
+  #Generate scores for benchmark scenario (no parcel changes)
   scenarioCalcBenchmark <- scenario(type = type, use_new = FALSE)
+  
   scores <- select(scenarioCalc, "new_score", "spatial_id")
   scoresBenchmark <- select(scenarioCalcBenchmark, "new_score", "spatial_id")
   names(scoresBenchmark) <- c('new_scoreBenchmark', 'spatial_id')
